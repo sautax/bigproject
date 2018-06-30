@@ -37,7 +37,7 @@ client.on('ready', () => {
 });
 
 let total = 0
-m = 0
+let m = 0
 
 
 
@@ -143,7 +143,7 @@ client.on('message', message => {
       }
       if (message.content.substr(5, 4) === 'stat') {
         let temp = total/m
-        message.channel.send("temps de répose moyen = " + parseInt(temp,10))
+        message.channel.send("temps de répose moyen = " + parseInt(temp,10) + "ms")
 
       }
 
