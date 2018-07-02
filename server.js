@@ -2,6 +2,7 @@ const http = require('http');
 const express = require('express');
 const app = express();
 const request = require('request');
+const cityList = require('./city.list.json')
 var getJSON = require('get-json')
 app.get("/", (request, response) => {
   console.log(Date.now() + " Ping Received");
@@ -11,8 +12,6 @@ app.listen(process.env.PORT);
 setInterval(() => {
   http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
 }, 280000);
-
-
 
 
 
@@ -124,7 +123,33 @@ client.on('message', message => {
 
 
     if (message.channel.name.includes('bot')) {
+    
+      if (message.content.substr(5,4 ) === 'Rwea') {
+        let r= Math.floor(Math.random()*cityList.length)
+
+      let cityid= cityList[r].id
+        
+              let url = 'https://api.openweathermap.org/data/2.5/weather?id='+cityid+'&lang=fr'+'&units=metric'+'&appid='+Wapi;
+        url = url.replace(/ /g,'%20')
+        url =url.replace(/\s/g,'%20')
+        console.log(url)
+request.get({
+    url: url,
+    json: true,
+    headers: {'User-Agent': 'request'}
+  }, (err, res, data) => {
+    if (err) {
+      message.channel.send('Error:', err);
+    } else if (res.statusCode !== 200) {
+      message.channel.send('Erreur:', res.statusCode);
+    } else {
+      message.channel.send(data.name+'\n'+data.weather[0].description +'\n'+data.main.temp+'°C\n'+'http://openweathermap.org/img/w/'+data.weather[0].icon+'.png')
+    }
+});
       
+      
+      
+      }
       if (message.content.substr(5,3 ) === 'wea') {
         let url = 'https://api.openweathermap.org/data/2.5/weather?q='+message.content.substr(9)+'&lang=fr'+'&units=metric'+'&appid='+Wapi;
         url = url.replace(/ /g,'%20')
