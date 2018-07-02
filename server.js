@@ -1,6 +1,8 @@
 const http = require('http');
 const express = require('express');
 const app = express();
+const request = require('request');
+var getJSON = require('get-json')
 app.get("/", (request, response) => {
   console.log(Date.now() + " Ping Received");
   response.sendStatus(200);
@@ -30,6 +32,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 // The token of your bot - https://discordapp.com/developers/applications/me
 const token = process.env.TOKEN;
+
+const Wapi = process.env.WEA;
 // The ready event is vital, it means that your bot will only start reacting to information
 // from Discord _after_ ready is emitted
 client.on('ready', () => {
@@ -37,7 +41,7 @@ client.on('ready', () => {
 });
 
 let total = 0
-m = 0
+let m = 0
 
 
 
@@ -114,36 +118,42 @@ client.on('message', message => {
 
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       }
 
     }
 
 
     if (message.channel.name.includes('bot')) {
+      
+      if (message.content.substr(5,3 ) === 'wea') {
+        let url = 'https://api.openweathermap.org/data/2.5/weather?q='+message.content.substr(9)+'&lang=fr'+'&units=metric'+'&appid='+Wapi;
+        url = url.replace(/ /g,'%20')
+        url =url.replace(/\s/g,'%20')
+        console.log(url)
+request.get({
+    url: url,
+    json: true,
+    headers: {'User-Agent': 'request'}
+  }, (err, res, data) => {
+    if (err) {
+      message.channel.send('Error:', err);
+    } else if (res.statusCode !== 200) {
+      message.channel.send('Erreur:', res.statusCode);
+    } else {
+      console.log(data)
+      console.log(data.weather[0].main)
+      message.channel.send(data.name+'\n'+data.weather[0].description +'\n'+data.main.temp+'°C\n'+'http://openweathermap.org/img/w/'+data.weather[0].icon+'.png')
+    }
+});
+      }
+      
       if (message.content.substr(5, 4) === 'ping') {
         message.channel.send(new Date().getTime() - message.createdTimestamp + " ms")
 
       }
       if (message.content.substr(5, 4) === 'stat') {
         let temp = total/m
-        message.channel.send("temps de répose moyen = " + parseInt(temp,10))
+        message.channel.send("temps de répose moyen = " + parseInt(temp,10) + "ms")
 
       }
 
