@@ -4,6 +4,8 @@ const app = express();
 const cityList = require('./city.list.json')
 const token = process.env.TOKEN;
 const Wapi = process.env.WEA;
+const prefix = '!bot'
+
 app.get("/", (request, response) => {
     console.log(Date.now() + " Ping Received");
     response.sendStatus(200);
@@ -51,13 +53,13 @@ client.on("message", async message => {
   
   // Also good practice to ignore any message that does not start with our prefix, 
   // which is set in the configuration file.
-  if(message.content.indexOf(config.prefix) !== 0) return;
+  if(message.content.indexOf(prefix) !== 0) return;
   
   // Here we separate our "command" name, and our "arguments" for the command. 
   // e.g. if we have the message "+say Is this the real life?" , we'll get the following:
   // command = say
   // args = ["Is", "this", "the", "real", "life?"]
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
   
   // Let's go with a few common example commands! Feel free to delete or change those.
@@ -83,7 +85,7 @@ client.on("message", async message => {
     // This command must be limited to mods and admins. In this example we just hardcode the role names.
     // Please read on Array.some() to understand this bit: 
     // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/some?
-    if(!message.member.roles.some(r=>["Administrator", "Moderator"].includes(r.name)) )
+    if(!message.member.roles.some(r=>["fondateur", "Admin",'Modérateur'].includes(r.name)) )
       return message.reply("Sorry, you don't have permissions to use this!");
     
     // Let's first check if we have a member and if we can kick them!
@@ -110,7 +112,7 @@ client.on("message", async message => {
   if(command === "ban") {
     // Most of this command is identical to kick, except that here we'll only let admins do it.
     // In the real world mods could ban too, but this is just an example, right? ;)
-    if(!message.member.roles.some(r=>["Administrator"].includes(r.name)) )
+    if(!message.member.roles.some(r=>["Admin","fondateur"].includes(r.name)) )
       return message.reply("Sorry, you don't have permissions to use this!");
     
     let member = message.mentions.members.first();
